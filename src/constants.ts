@@ -1,8 +1,13 @@
 export enum Inputs {
-    Key = "key",
-    Path = "path",
-    RestoreKeys = "restore-keys",
-    UploadChunkSize = "upload-chunk-size"
+    CabalCacheDownloadUri = "cabal-cache-download-uri",
+    CabalCacheVersion = "cabal-cache-version",
+    DistDir = "dist-dir",
+    StorePath = "store-path",
+    Region = "region",
+    ArchiveUri = "archive-uri",
+    Threads = "threads",
+    EnableSave = "enable-save",
+    Skip = "skip"
 }
 
 export enum Outputs {
@@ -10,8 +15,13 @@ export enum Outputs {
 }
 
 export enum State {
-    CachePrimaryKey = "CACHE_KEY",
-    CacheMatchedKey = "CACHE_RESULT"
+    CacheDistDirOption = "DIST_DIR_OPTION",
+    CacheStorePathOption = "STORE_PATH_OPTION",
+    CacheRegionOption = "REGION_OPTION",
+    CacheArchiveUriOption = "ARCHIVE_URI_OPTION",
+    CacheThreadsOption = "THREADS_OPTION",
+    EnableSave = "ENABLE_SAVE",
+    Skip = "SKIP"
 }
 
 export enum Events {

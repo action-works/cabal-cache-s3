@@ -1,19 +1,35 @@
-name: 'Cache'
-description: 'Cache artifacts like dependencies and build outputs to improve workflow execution time'
+name: 'Cabal Cache S3'
+description: 'Cache Haskell packages to S3 to improve workflow execution time'
 author: 'GitHub'
 inputs:
-  path:
-    description: 'A list of files, directories, and wildcard patterns to cache and restore'
+  cabal-cache-download-uri:
+    description: 'Location from which to download cabal-cache'
+    default: https://github.com/haskell-works/cabal-cache/releases
+  cabal-cache-version:
+    description: 'Version of the cabal-cache'
+    default: latest
+  store-path:
+    description: 'Path to the cabal-store'
     required: true
-  key:
-    description: 'An explicit key for restoring and saving the cache'
+  dist-dir:
+    description: 'The cabal dist directory'
     required: true
-  restore-keys:
-    description: 'An ordered list of keys to use for restoring the cache if no cache hit occurred for key'
-    required: false
-  upload-chunk-size:
-    description: 'The chunk size used to split up large files during upload, in bytes'
-    required: false
+  region:
+    description: 'AWS region of the S3 bucket'
+    required: true
+  archive-uri:
+    description: 'Locations of the cabal-cache archives'
+    required: true
+  threads:
+    description: 'Number of threads'
+    required: true
+  enable-save:
+    description: 'Whether to enable save'
+    required: true
+    default: true
+  skip:
+    description: 'Whether to skip this action'
+    default: false
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'

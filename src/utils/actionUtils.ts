@@ -18,28 +18,8 @@ export function isExactKeyMatch(key: string, cacheKey?: string): boolean {
     );
 }
 
-export function setCacheState(state: string): void {
-    core.saveState(State.CacheMatchedKey, state);
-}
-
 export function setCacheHitOutput(isCacheHit: boolean): void {
     core.setOutput(Outputs.CacheHit, isCacheHit.toString());
-}
-
-export function setOutputAndState(key: string, cacheKey?: string): void {
-    setCacheHitOutput(isExactKeyMatch(key, cacheKey));
-    // Store the matched cache key if it exists
-    cacheKey && setCacheState(cacheKey);
-}
-
-export function getCacheState(): string | undefined {
-    const cacheKey = core.getState(State.CacheMatchedKey);
-    if (cacheKey) {
-        core.debug(`Cache state/key: ${cacheKey}`);
-        return cacheKey;
-    }
-
-    return undefined;
 }
 
 export function logWarning(message: string): void {

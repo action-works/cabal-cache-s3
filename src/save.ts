@@ -1,8 +1,11 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
+import * as exec from "@actions/exec";
+import * as glob from '@actions/glob';
 
 import { Events, Inputs, State } from "./constants";
 import * as utils from "./utils/actionUtils";
+import * as path from 'path';
 
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
 // @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
@@ -27,40 +30,30 @@ async function run(): Promise<void> {
             return;
         }
 
-        const state = utils.getCacheState();
+        const skip = core.getState(State.Skip);
 
-        // Inputs are re-evaluted before the post action, so we want the original key used for restore
-        const primaryKey = core.getState(State.CachePrimaryKey);
-        if (!primaryKey) {
-            utils.logWarning(`Error retrieving key from state.`);
-            return;
-        }
+        console.info(`skip: ${skip}`);
 
-        if (utils.isExactKeyMatch(primaryKey, state)) {
-            core.info(
-                `Cache hit occurred on the primary key ${primaryKey}, not saving cache.`
-            );
-            return;
-        }
+        if (skip != "true") {
+            const enableSave = core.getState(State.EnableSave);
 
-        const cachePaths = utils.getInputAsArray(Inputs.Path, {
-            required: true
-        });
+            if (enableSave == 'true') {
+                const distDirOption = core.getState(State.CacheDistDirOption);
+                const storePathOption = core.getState(State.CacheStorePathOption);
+                const regionOption = core.getState(State.CacheRegionOption);
+                const archiveUriOption = core.getState(State.CacheArchiveUriOption);
+                const threadsOption = core.getState(State.CacheThreadsOption);
+                
+                await exec.exec(`cabal-cache sync-to-archive ${threadsOption} ${archiveUriOption} ${regionOption} ${storePathOption} ${distDirOption}`);
 
-        try {
-            await cache.saveCache(cachePaths, primaryKey, {
-                uploadChunkSize: utils.getInputAsInt(Inputs.UploadChunkSize)
-            });
-            core.info(`Cache saved with key: ${primaryKey}`);
-        } catch (error) {
-            if (error.name === cache.ValidationError.name) {
-                throw error;
-            } else if (error.name === cache.ReserveCacheError.name) {
-                core.info(error.message);
+                core.info('Done');
             } else {
-                utils.logWarning(error.message);
+                core.info('Save disabled');
             }
+        } else {
+            console.info("Skipping");
         }
+
     } catch (error) {
         utils.logWarning(error.message);
     }

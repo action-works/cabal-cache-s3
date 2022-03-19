@@ -1,8 +1,51 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
+import * as exec from "@actions/exec";
+import * as glob from '@actions/glob';
+import * as tc from '@actions/tool-cache';
+import * as io from '@actions/io';
 
 import { Events, Inputs, State } from "./constants";
+import * as fs from 'fs';
+import * as path from 'path';
 import * as utils from "./utils/actionUtils";
+
+async function downloadTool(cabalCacheDownloadUri: string, cabalCacheVersion: string): Promise<string> {
+    const downloadPrefix = cabalCacheVersion == "latest"
+        ? `${cabalCacheDownloadUri}/latest/download`
+        : `${cabalCacheDownloadUri}/download/${cabalCacheVersion}`;
+
+    if (process.platform === 'win32') {
+        const cabalCachePath = await tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-windows.tar.gz`);
+        const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
+        return cabalCacheExtractedFolder;
+    } else if (process.platform === 'darwin') {
+        const cabalCachePath = await tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`);
+        const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
+        return cabalCacheExtractedFolder;
+    } else if (process.platform === 'linux') {
+        const cabalCachePath = await tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-linux.tar.gz`);
+        const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
+        return cabalCacheExtractedFolder;
+    } else {
+        core.setFailed('Download failed');
+        throw 'Download failed 2';
+    }
+}
+
+async function installTool(cabalCacheDownloadUri: string, cabalCacheVersion: string): Promise<string> {
+    const cabalCachePath = await downloadTool(cabalCacheDownloadUri, cabalCacheVersion);
+
+    core.addPath(cabalCachePath);
+
+    await exec.exec('cabal-cache version');
+
+    return cabalCachePath;
+}
+
+async function sleep(ms: number): Promise<NodeJS.Timeout> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function run(): Promise<void> {
     try {
@@ -24,46 +67,52 @@ async function run(): Promise<void> {
             return;
         }
 
-        const primaryKey = core.getInput(Inputs.Key, { required: true });
-        core.saveState(State.CachePrimaryKey, primaryKey);
+        const skip = core.getInput(Inputs.Skip, { required: false });
 
-        const restoreKeys = utils.getInputAsArray(Inputs.RestoreKeys);
-        const cachePaths = utils.getInputAsArray(Inputs.Path, {
-            required: true
-        });
+        core.saveState(State.Skip, skip);
 
-        try {
-            const cacheKey = await cache.restoreCache(
-                cachePaths,
-                primaryKey,
-                restoreKeys
-            );
-            if (!cacheKey) {
-                core.info(
-                    `Cache not found for input keys: ${[
-                        primaryKey,
-                        ...restoreKeys
-                    ].join(", ")}`
-                );
-                return;
-            }
+        console.info(`skip: ${skip}`);
 
-            // Store the matched cache key
-            utils.setCacheState(cacheKey);
+        if (skip != "true") {
+            console.info('Extracting parameters');
+            const cabalCacheDownloadUri = core.getInput(Inputs.CabalCacheDownloadUri, { required: true })
+            const cabalCacheVersion = core.getInput(Inputs.CabalCacheVersion, { required: true });
+            const storePath = core.getInput(Inputs.StorePath, { required: false });
+            const distDir = core.getInput(Inputs.DistDir, { required: false });
+            const region = core.getInput(Inputs.Region, { required: false });
+            const archiveUri = core.getInput(Inputs.ArchiveUri, { required: false });
+            const threads = core.getInput(Inputs.Threads, { required: false });
+            const enableSave = core.getInput(Inputs.EnableSave, { required: true });
 
-            const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
-            utils.setCacheHitOutput(isExactKeyMatch);
+            console.info('Building options');
+            const distDirOption = distDir != '' ? `--build-path ${distDir}` : '';
+            const storePathOption = distDir != '' ? `--store-path ${storePath}` : '';
+            const regionOption = region != '' ? `--region ${region}` : '';
+            const archiveUriOption = archiveUri != '' ? `--archive-uri ${archiveUri}` : '';
+            const threadsOption = threads != '' ? `--threads ${threads}` : '';
 
-            core.info(`Cache restored from key: ${cacheKey}`);
-        } catch (error) {
-            if (error.name === cache.ValidationError.name) {
-                throw error;
-            } else {
-                utils.logWarning(error.message);
-                utils.setCacheHitOutput(false);
-            }
+            console.info('Saving state');
+            core.saveState(State.EnableSave, enableSave);
+            core.saveState(State.CacheDistDirOption, distDirOption);
+            core.saveState(State.CacheStorePathOption, storePathOption);
+            core.saveState(State.CacheRegionOption, regionOption);
+            core.saveState(State.CacheArchiveUriOption, archiveUriOption);
+            core.saveState(State.CacheThreadsOption, threadsOption);
+
+            console.info('Installig cabal-cache');
+
+            await installTool(cabalCacheDownloadUri, cabalCacheVersion);
+
+            const cmd = `cabal-cache sync-from-archive ${threadsOption} ${archiveUriOption} ${regionOption} ${storePathOption} ${distDirOption}`;
+
+            console.info(`Running command: ${cmd}`);
+
+            await exec.exec(cmd);
+        } else {
+            console.info("Skipping");
         }
     } catch (error) {
+        utils.setCacheHitOutput(false);
         core.setFailed(error.message);
     }
 }
