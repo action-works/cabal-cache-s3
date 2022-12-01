@@ -23,6 +23,15 @@ inputs:
   threads:
     description: 'Number of threads'
     required: true
+  host-name:
+    description: 'Hostname of the S3 provider'
+    required: false
+  host-port:
+    description: 'Port of the S3 provider'
+    required: false
+  host-ssl:
+    description: 'Whether to use SSL when querying the S3 provider'
+    required: false
   enable-save:
     description: 'Whether to enable save'
     required: true

@@ -1,11 +1,8 @@
-import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
-import * as glob from '@actions/glob';
 
-import { Events, Inputs, State } from "./constants";
+import { Events, State } from "./constants";
 import * as utils from "./utils/actionUtils";
-import * as path from 'path';
 
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
 // @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
@@ -37,23 +34,40 @@ async function run(): Promise<void> {
         if (skip != "true") {
             const enableSave = core.getState(State.EnableSave);
 
-            if (enableSave == 'true') {
+            if (enableSave == "true") {
                 const distDirOption = core.getState(State.CacheDistDirOption);
-                const storePathOption = core.getState(State.CacheStorePathOption);
+                const storePathOption = core.getState(
+                    State.CacheStorePathOption
+                );
                 const regionOption = core.getState(State.CacheRegionOption);
-                const archiveUriOption = core.getState(State.CacheArchiveUriOption);
+                const archiveUriOption = core.getState(
+                    State.CacheArchiveUriOption
+                );
                 const threadsOption = core.getState(State.CacheThreadsOption);
-                
-                await exec.exec(`cabal-cache sync-to-archive ${threadsOption} ${archiveUriOption} ${regionOption} ${storePathOption} ${distDirOption}`);
+                const hostNameOption = core.getState(State.CacheHostNameOption);
+                const hostPortOption = core.getState(State.CacheHostPortOption);
+                const hostSslOption = core.getState(State.CacheHostSslOption);
 
-                core.info('Done');
+                await exec.exec(
+                    "cabal-cache sync-to-archive" +
+                        ` ${threadsOption} ` +
+                        ` ${archiveUriOption} ` +
+                        ` ${regionOption} ` +
+                        ` ${storePathOption} ` +
+                        ` ${distDirOption} ` +
+                        ` ${hostNameOption} ` +
+                        ` ${hostPortOption} ` +
+                        ` ${hostSslOption} ` +
+                        ""
+                );
+
+                core.info("Done");
             } else {
-                core.info('Save disabled');
+                core.info("Save disabled");
             }
         } else {
             console.info("Skipping");
         }
-
     } catch (error) {
         utils.logWarning(error.message);
     }

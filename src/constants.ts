@@ -6,6 +6,9 @@ export enum Inputs {
     Region = "region",
     ArchiveUri = "archive-uri",
     Threads = "threads",
+    HostName = "host-name",
+    HostPort = "host-port",
+    HostSsl = "host-ssl",
     EnableSave = "enable-save",
     Skip = "skip"
 }
@@ -20,6 +23,9 @@ export enum State {
     CacheRegionOption = "REGION_OPTION",
     CacheArchiveUriOption = "ARCHIVE_URI_OPTION",
     CacheThreadsOption = "THREADS_OPTION",
+    CacheHostNameOption = "HOST_NAME",
+    CacheHostPortOption = "HOST_PORT",
+    CacheHostSslOption = "HOST_SSL",
     EnableSave = "ENABLE_SAVE",
     Skip = "SKIP"
 }
