@@ -35,6 +35,11 @@ The following is an example steps for caching Haskell project in Github Actions:
     skip: "${{ secrets.BINARY_CACHE_URI != '' }}"
 ```
 
+### Support for non-AWS S3 backends
+
+See [backblaze.yml](https://github.com/haskell-works/cabal-cache/blob/main/.github/workflows/backblaze.yml)
+for an example.
+
 ## Contributing
 We would love for you to contribute to `action-works/cabal-cache-s3`, pull requests are welcome! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
