@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 
-import { Events, Outputs, RefKey, State } from "../src/constants";
+import { Events, RefKey } from "../src/constants";
 import * as actionUtils from "../src/utils/actionUtils";
 import * as testUtils from "../src/utils/testUtils";
 
