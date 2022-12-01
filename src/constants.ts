@@ -6,8 +6,11 @@ export enum Inputs {
     Region = "region",
     ArchiveUri = "archive-uri",
     Threads = "threads",
+    HostName = "host-name",
+    HostPort = "host-port",
+    HostSsl = "host-ssl",
     EnableSave = "enable-save",
-    Skip = "skip"
+    Skip = "skip",
 }
 
 export enum Outputs {
@@ -20,14 +23,17 @@ export enum State {
     CacheRegionOption = "REGION_OPTION",
     CacheArchiveUriOption = "ARCHIVE_URI_OPTION",
     CacheThreadsOption = "THREADS_OPTION",
+    CacheHostNameOption = "HOST_NAME",
+    CacheHostPortOption = "HOST_PORT",
+    CacheHostSslOption = "HOST_SSL",
     EnableSave = "ENABLE_SAVE",
-    Skip = "SKIP"
+    Skip = "SKIP",
 }
 
 export enum Events {
     Key = "GITHUB_EVENT_NAME",
     Push = "push",
-    PullRequest = "pull_request"
+    PullRequest = "pull_request",
 }
 
 export const RefKey = "GITHUB_REF";

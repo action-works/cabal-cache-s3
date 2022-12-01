@@ -43,8 +43,20 @@ async function run(): Promise<void> {
                 const regionOption = core.getState(State.CacheRegionOption);
                 const archiveUriOption = core.getState(State.CacheArchiveUriOption);
                 const threadsOption = core.getState(State.CacheThreadsOption);
+                const hostNameOption = core.getState(State.CacheHostNameOption);
+                const hostPortOption = core.getState(State.CacheHostPortOption);
+                const hostSslOption = core.getState(State.CacheHostSslOption);
                 
-                await exec.exec(`cabal-cache sync-to-archive ${threadsOption} ${archiveUriOption} ${regionOption} ${storePathOption} ${distDirOption}`);
+                await exec.exec("cabal-cache sync-to-archive" +
+                    ` ${threadsOption} ` +
+                    ` ${archiveUriOption} ` +
+                    ` ${regionOption} ` +
+                    ` ${storePathOption} ` +
+                    ` ${distDirOption} ` +
+                    ` ${hostNameOption} ` +
+                    ` ${hostPortOption} ` +
+                    ` ${hostSslOption} ` +
+                    "");
 
                 core.info('Done');
             } else {

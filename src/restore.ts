@@ -83,6 +83,9 @@ async function run(): Promise<void> {
             const archiveUri = core.getInput(Inputs.ArchiveUri, { required: false });
             const threads = core.getInput(Inputs.Threads, { required: false });
             const enableSave = core.getInput(Inputs.EnableSave, { required: true });
+            const hostName = core.getInput(Inputs.HostName, { required: false });
+            const hostPort = core.getInput(Inputs.HostPort, { required: false });
+            const hostSsl = core.getInput(Inputs.HostSsl, { required: false });
 
             console.info('Building options');
             const distDirOption = distDir != '' ? `--build-path ${distDir}` : '';
@@ -90,6 +93,9 @@ async function run(): Promise<void> {
             const regionOption = region != '' ? `--region ${region}` : '';
             const archiveUriOption = archiveUri != '' ? `--archive-uri ${archiveUri}` : '';
             const threadsOption = threads != '' ? `--threads ${threads}` : '';
+            const hostNameOption = distDir != '' ? `--host-name-override ${hostName}` : '';
+            const hostPortOption = distDir != '' ? `--host-port-override ${hostPort}` : '';
+            const hostSslOption = distDir != '' ? `--host-ssl-override ${hostSsl}` : '';
 
             console.info('Saving state');
             core.saveState(State.EnableSave, enableSave);
@@ -103,7 +109,16 @@ async function run(): Promise<void> {
 
             await installTool(cabalCacheDownloadUri, cabalCacheVersion);
 
-            const cmd = `cabal-cache sync-from-archive ${threadsOption} ${archiveUriOption} ${regionOption} ${storePathOption} ${distDirOption}`;
+            const cmd = "cabal-cache sync-from-archive" +
+                ` ${threadsOption}` +
+                ` ${archiveUriOption}` +
+                ` ${regionOption}` +
+                ` ${storePathOption}` +
+                ` ${distDirOption}` +
+                ` ${hostNameOption}` +
+                ` ${hostPortOption}` +
+                ` ${hostSslOption}` +
+                "";
 
             console.info(`Running command: ${cmd}`);
 
