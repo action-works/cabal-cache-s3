@@ -8,6 +8,9 @@ inputs:
   cabal-cache-version:
     description: 'Version of the cabal-cache'
     default: latest
+  path:
+    description: 'Path to the cabal project'
+    required: true
   store-path:
     description: 'Path to the cabal-store'
     required: true
@@ -23,6 +26,15 @@ inputs:
   threads:
     description: 'Number of threads'
     required: true
+  host-name:
+    description: 'Hostname of the S3 provider'
+    required: false
+  host-port:
+    description: 'Port of the S3 provider'
+    required: false
+  host-ssl:
+    description: 'Whether to use SSL when querying the S3 provider'
+    required: false
   enable-save:
     description: 'Whether to enable save'
     required: true

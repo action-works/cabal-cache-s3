@@ -3,7 +3,7 @@ name: psl
 version: 1.8.0
 type: npm
 summary: Domain name parser based on the Public Suffix List
-homepage: https://github.com/lupomontero/psl#readme
+homepage: 
 license: mit
 licenses:
 - sources: LICENSE
