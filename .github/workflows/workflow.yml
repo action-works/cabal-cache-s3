@@ -81,7 +81,7 @@ jobs:
     - name: Save cache
       uses: ./
       with:
-        cabal-cache-version: 1.0.5.0
+        cabal-cache-version: latest
         store-path: ${{ steps.setup-haskell.outputs.cabal-store }}
         archive-uri: local-archive-uri
         path: test-cache

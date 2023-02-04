@@ -6382,23 +6382,30 @@ const exec = __importStar(__webpack_require__(986));
 const tc = __importStar(__webpack_require__(533));
 const constants_1 = __webpack_require__(694);
 const utils = __importStar(__webpack_require__(443));
-function downloadTool(cabalCacheDownloadUri, cabalCacheVersion) {
+function downloadTool(uri) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.info(`Downloading: ${uri}`);
+        const result = yield tc.downloadTool(uri);
+        return result;
+    });
+}
+function downloadCabalCache(cabalCacheDownloadUri, cabalCacheVersion) {
     return __awaiter(this, void 0, void 0, function* () {
         const downloadPrefix = cabalCacheVersion == "latest"
             ? `${cabalCacheDownloadUri}/latest/download`
             : `${cabalCacheDownloadUri}/download/v${cabalCacheVersion}`;
         if (process.platform === "win32") {
-            const cabalCachePath = yield tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-windows.tar.gz`);
+            const cabalCachePath = yield downloadTool(`${downloadPrefix}/cabal-cache-x86_64-windows.tar.gz`);
             const cabalCacheExtractedFolder = yield tc.extractTar(cabalCachePath);
             return cabalCacheExtractedFolder;
         }
         else if (process.platform === "darwin") {
-            const cabalCachePath = yield tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`);
+            const cabalCachePath = yield downloadTool(`${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`);
             const cabalCacheExtractedFolder = yield tc.extractTar(cabalCachePath);
             return cabalCacheExtractedFolder;
         }
         else if (process.platform === "linux") {
-            const cabalCachePath = yield tc.downloadTool(`${downloadPrefix}/cabal-cache-x86_64-linux.tar.gz`);
+            const cabalCachePath = yield downloadTool(`${downloadPrefix}/cabal-cache-x86_64-linux.tar.gz`);
             const cabalCacheExtractedFolder = yield tc.extractTar(cabalCachePath);
             return cabalCacheExtractedFolder;
         }
@@ -6410,7 +6417,7 @@ function downloadTool(cabalCacheDownloadUri, cabalCacheVersion) {
 }
 function installTool(cabalCacheDownloadUri, cabalCacheVersion) {
     return __awaiter(this, void 0, void 0, function* () {
-        const cabalCachePath = yield downloadTool(cabalCacheDownloadUri, cabalCacheVersion);
+        const cabalCachePath = yield downloadCabalCache(cabalCacheDownloadUri, cabalCacheVersion);
         core.addPath(cabalCachePath);
         yield exec.exec("cabal-cache version");
         return cabalCachePath;

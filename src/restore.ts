@@ -5,7 +5,15 @@ import * as tc from "@actions/tool-cache";
 import { Events, Inputs, State } from "./constants";
 import * as utils from "./utils/actionUtils";
 
-async function downloadTool(
+async function downloadTool(uri: string): Promise<string> {
+    console.info(`Downloading: ${uri}`);
+
+    const result = await tc.downloadTool(uri);
+
+    return result;
+}
+
+async function downloadCabalCache(
     cabalCacheDownloadUri: string,
     cabalCacheVersion: string
 ): Promise<string> {
@@ -15,19 +23,19 @@ async function downloadTool(
             : `${cabalCacheDownloadUri}/download/v${cabalCacheVersion}`;
 
     if (process.platform === "win32") {
-        const cabalCachePath = await tc.downloadTool(
+        const cabalCachePath = await downloadTool(
             `${downloadPrefix}/cabal-cache-x86_64-windows.tar.gz`
         );
         const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
         return cabalCacheExtractedFolder;
     } else if (process.platform === "darwin") {
-        const cabalCachePath = await tc.downloadTool(
+        const cabalCachePath = await downloadTool(
             `${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`
         );
         const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
         return cabalCacheExtractedFolder;
     } else if (process.platform === "linux") {
-        const cabalCachePath = await tc.downloadTool(
+        const cabalCachePath = await downloadTool(
             `${downloadPrefix}/cabal-cache-x86_64-linux.tar.gz`
         );
         const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
@@ -42,7 +50,7 @@ async function installTool(
     cabalCacheDownloadUri: string,
     cabalCacheVersion: string
 ): Promise<string> {
-    const cabalCachePath = await downloadTool(
+    const cabalCachePath = await downloadCabalCache(
         cabalCacheDownloadUri,
         cabalCacheVersion
     );
