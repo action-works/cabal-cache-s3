@@ -2,6 +2,17 @@
 
 This action allows caching dependencies to S3 to improve workflow execution time.
 
+This action is preferred over [actions/cache](https://github.com/actions/cache) because
+it supports fine grained cache.
+
+A fine grain cache allows any built packages to be cache even if CI failed.  A fine grained
+cache also means that sharing is maximised between builds.  Small changes in the build plan
+no longer invalidate the cache and it isn't necessary to fiddle with the cache key format to
+try and maximise cache hits.
+
+For more information see the [cabal-cache](https://github.com/haskell-works/cabal-cache) tool
+repository README.
+
 <a href="https://github.com/action-works/cabal-cache-s3/actions?query=workflow%3ATests"><img alt="GitHub Actions status" src="https://github.com/action-works/cabal-cache-s3/workflows/Tests/badge.svg?branch=main&event=push"></a>
 
 ## Documentation
