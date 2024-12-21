@@ -4,7 +4,7 @@ author: 'GitHub'
 inputs:
   cabal-cache-download-uri:
     description: 'Location from which to download cabal-cache'
-    default: https://github.com/haskell-works/cabal-cache/releases
+    default: https://github.com/haskell/cabal-cache/releases
   cabal-cache-version:
     description: 'Version of the cabal-cache'
     default: latest
