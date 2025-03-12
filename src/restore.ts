@@ -30,7 +30,7 @@ async function downloadCabalCache(
         return cabalCacheExtractedFolder;
     } else if (process.platform === "darwin") {
         const cabalCachePath = await downloadTool(
-            `${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`
+            `${downloadPrefix}/cabal-cache-arm64-darwin.tar.gz`
         );
         const cabalCacheExtractedFolder = await tc.extractTar(cabalCachePath);
         return cabalCacheExtractedFolder;
