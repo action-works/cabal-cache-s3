@@ -6400,7 +6400,7 @@ function downloadCabalCache(cabalCacheDownloadUri, cabalCacheVersion) {
             return cabalCacheExtractedFolder;
         }
         else if (process.platform === "darwin") {
-            const cabalCachePath = yield downloadTool(`${downloadPrefix}/cabal-cache-x86_64-darwin.tar.gz`);
+            const cabalCachePath = yield downloadTool(`${downloadPrefix}/cabal-cache-arm64-darwin.tar.gz`);
             const cabalCacheExtractedFolder = yield tc.extractTar(cabalCachePath);
             return cabalCacheExtractedFolder;
         }

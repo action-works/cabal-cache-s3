@@ -24,17 +24,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
-        node-version: '12.x'
+        node-version: '18.x'
     - name: Determine npm cache directory
       id: npm-cache
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Restore npm cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ${{ steps.npm-cache.outputs.dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -57,8 +57,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-    - uses: haskell/actions/setup@v1
+      uses: actions/checkout@v4
+    - uses: haskell-actions/setup@v2
       id: setup-haskell
       with:
         ghc-version: 8.10.7
